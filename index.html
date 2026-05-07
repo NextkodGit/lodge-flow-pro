@@ -405,7 +405,12 @@ input[type=file]{
   </div>
 
   <hr>
-
+  <button onclick="openChangePw()" style="
+    width:100%;padding:11px;font-size:14px;margin-bottom:2px;
+    background:#1a1a2a;color:#aaaaff;
+    border:1px solid #3a3a6a;border-radius:8px;cursor:pointer;
+    font-family:'Georgia',serif;letter-spacing:0.5px;
+  ">🔑 Change Password</button>
   <button onclick="enterDragMode()" style="
     width:100%;padding:11px;font-size:14px;margin-top:8px;margin-bottom:2px;
     background:#1a1200;color:#ffaa00;
@@ -461,37 +466,17 @@ input[type=file]{
 </div>
 
 <!-- ══ CHANGE PASSWORD MODAL ══ -->
-
-
-
-<!-- ══ EXPORT PIN MODAL ══ -->
-<div id="exportPinModal" style="position:fixed;inset:0;background:#000000cc;z-index:40;display:none;pointer-events:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#111;border:2px solid #9b59b6;border-radius:12px;padding:22px;width:100%;max-width:340px;text-align:center">
-    <div style="font-size:36px;margin-bottom:8px">🔐</div>
-    <h4 style="color:#9b59b6;margin:0 0 6px;font-size:17px">Admin PIN Required</h4>
-    <p style="color:#888;font-size:13px;margin:0 0 14px">Enter the admin PIN to export the app</p>
-    <input type="password" id="exportPinInput" placeholder="Enter PIN"
-      style="width:100%;padding:12px;font-size:18px;background:#0a0a0a;color:white;border:2px solid #444;border-radius:8px;margin-bottom:8px;text-align:center;letter-spacing:4px;outline:none"
-      onkeydown="if(event.key==='Enter')checkExportPin()">
-    <div id="exportPinError" style="color:#ff6666;font-size:13px;min-height:16px;margin-bottom:10px"></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="checkExportPin()" style="flex:1;padding:11px;background:#2a0a4a;color:#cc88ff;border:2px solid #7a3aaa;border-radius:8px;cursor:pointer;font-size:14px">✔ Confirm</button>
-      <button onclick="closeExportPin()" style="flex:1;padding:11px;background:#3a1a1a;color:#ff9999;border:1px solid #6a2a2a;border-radius:8px;cursor:pointer;font-size:14px">✖ Cancel</button>
+<div id="changePwModal" style="position:fixed;inset:0;background:#000000bb;z-index:40;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#111;border:2px solid #9b59b6;border-radius:12px;padding:20px;width:100%;max-width:360px">
+    <h4 style="color:#9b59b6;margin:0 0 14px;font-size:16px">🔑 Change Password</h4>
+    <input type="password" id="cpCurrent" placeholder="Current password" style="width:100%;padding:10px;font-size:15px;background:#0a0a0a;color:white;border:1px solid #444;border-radius:8px;margin:6px 0;text-align:center;letter-spacing:2px;outline:none">
+    <input type="password" id="cpNew" placeholder="New password" style="width:100%;padding:10px;font-size:15px;background:#0a0a0a;color:white;border:1px solid #444;border-radius:8px;margin:6px 0;text-align:center;letter-spacing:2px;outline:none">
+    <input type="password" id="cpConfirm" placeholder="Confirm new password" style="width:100%;padding:10px;font-size:15px;background:#0a0a0a;color:white;border:1px solid #444;border-radius:8px;margin:6px 0;text-align:center;letter-spacing:2px;outline:none">
+    <div id="cpError" style="color:#ff6666;font-size:13px;min-height:16px;text-align:center;margin:4px 0"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button onclick="saveChangePw()" style="flex:1;padding:11px;background:#1a2a1a;color:#7fff7f;border:1px solid #2a6a2a;border-radius:8px;cursor:pointer;font-size:14px">✔ Save</button>
+      <button onclick="closeChangePw()" style="flex:1;padding:11px;background:#3a1a1a;color:#ff9999;border:1px solid #6a2a2a;border-radius:8px;cursor:pointer;font-size:14px">✖ Cancel</button>
     </div>
-  </div>
-</div>
-
-<!-- ══ SESSION EXPIRED MODAL ══ -->
-<div id="sessionModal" style="position:fixed;inset:0;background:#000000ee;z-index:50;display:none;pointer-events:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#111;border:2px solid gold;border-radius:12px;padding:22px;width:100%;max-width:340px;text-align:center">
-    <div style="font-size:42px;margin-bottom:8px">⏰</div>
-    <h4 style="color:gold;margin:0 0 8px;font-size:17px">Session Expired</h4>
-    <p style="color:#aaa;font-size:14px;margin:0 0 16px;line-height:1.6">Your 2-hour session has ended.<br>Please enter the password to continue.</p>
-    <input type="password" id="sessionPwInput" placeholder="••••••••••"
-      style="width:100%;padding:12px;font-size:18px;background:#0a0a0a;color:white;border:2px solid #444;border-radius:8px;margin-bottom:8px;text-align:center;letter-spacing:3px;outline:none"
-      onkeydown="if(event.key==='Enter')checkSessionPw()">
-    <div id="sessionPwError" style="color:#ff6666;font-size:13px;min-height:16px;margin-bottom:10px"></div>
-    <button onclick="checkSessionPw()" style="width:100%;padding:13px;background:#1a2a1a;color:#7fff7f;border:2px solid #2a6a2a;border-radius:8px;cursor:pointer;font-size:15px">🔓 Unlock</button>
   </div>
 </div>
 
@@ -534,10 +519,6 @@ function getAudioCtx() {
 }
 function current() { return data[data.mode]; }
 
-var EXPORT_PIN = "3712";
-var SESSION_DURATION = 2 * 60 * 60 * 1000; // 2 hours in ms
-var sessionTimer = null;
-
 /* ── PASSWORD ── */
 function checkPw() {
   var val = document.getElementById("pwInput").value;
@@ -545,7 +526,6 @@ function checkPw() {
   if (val === pw) {
     document.getElementById("lockScreen").style.display = "none";
     document.getElementById("stage").style.display = "flex";
-    startSessionTimer();
     init();
   } else {
     var err = document.getElementById("pwError");
@@ -555,73 +535,6 @@ function checkPw() {
     setTimeout(function(){ err.textContent = ""; }, 2500);
   }
 }
-
-/* ── SESSION TIMER (2 hours) ── */
-function startSessionTimer() {
-  if (sessionTimer) clearTimeout(sessionTimer);
-  sessionTimer = setTimeout(function() {
-    lockSession();
-  }, SESSION_DURATION);
-}
-
-function lockSession() {
-  document.getElementById("builder").style.display = "none";
-  document.getElementById("filterPage").style.display = "none";
-  document.getElementById("sessionPwInput").value = "";
-  document.getElementById("sessionPwError").textContent = "";
-  var m = document.getElementById("sessionModal");
-  m.style.pointerEvents = "all";
-  m.style.display = "flex";
-}
-
-function checkSessionPw() {
-  var val = document.getElementById("sessionPwInput").value;
-  var pw = localStorage.getItem("lodgePw") || "Trinity1846";
-  if (val === pw) {
-    var m = document.getElementById("sessionModal");
-    m.style.display = "none";
-    m.style.pointerEvents = "none";
-    startSessionTimer();
-  } else {
-    var err = document.getElementById("sessionPwError");
-    err.textContent = "Incorrect password.";
-    document.getElementById("sessionPwInput").value = "";
-    setTimeout(function(){ err.textContent = ""; }, 2000);
-  }
-}
-
-/* ── EXPORT PIN ── */
-function exportHTML() {
-  var m = document.getElementById("exportPinModal");
-  document.getElementById("exportPinInput").value = "";
-  document.getElementById("exportPinError").textContent = "";
-  m.style.pointerEvents = "all";
-  m.style.display = "flex";
-  setTimeout(function(){ document.getElementById("exportPinInput").focus(); }, 100);
-}
-
-function checkExportPin() {
-  var pin = document.getElementById("exportPinInput").value.trim();
-  if (pin !== EXPORT_PIN) {
-    var err = document.getElementById("exportPinError");
-    err.textContent = "Incorrect PIN. Access denied.";
-    document.getElementById("exportPinInput").value = "";
-    setTimeout(function(){ err.textContent = ""; }, 2500);
-    return;
-  }
-  closeExportPin();
-  doExportHTML();
-}
-
-function closeExportPin() {
-  var m = document.getElementById("exportPinModal");
-  m.style.display = "none";
-  m.style.pointerEvents = "none";
-  document.getElementById("exportPinInput").value = "";
-  document.getElementById("exportPinError").textContent = "";
-}
-
-function doExportHTML() {
 
 /* ── INIT ── */
 function init() {
@@ -927,7 +840,29 @@ function onDragEnd(e) {
 }
 
 /* ── CHANGE PASSWORD ── */
-
+function openChangePw() {
+  document.getElementById("cpCurrent").value = "";
+  document.getElementById("cpNew").value = "";
+  document.getElementById("cpConfirm").value = "";
+  document.getElementById("cpError").textContent = "";
+  document.getElementById("changePwModal").style.display = "flex";
+}
+function closeChangePw() {
+  document.getElementById("changePwModal").style.display = "none";
+}
+function saveChangePw() {
+  var cur = document.getElementById("cpCurrent").value;
+  var nw  = document.getElementById("cpNew").value;
+  var con = document.getElementById("cpConfirm").value;
+  var storedPw = localStorage.getItem("lodgePw") || "Trinity1846";
+  var err = document.getElementById("cpError");
+  if (cur !== storedPw) { err.textContent = "Current password is incorrect."; return; }
+  if (nw.length < 4) { err.textContent = "New password must be at least 4 characters."; return; }
+  if (nw !== con) { err.textContent = "Passwords do not match."; return; }
+  localStorage.setItem("lodgePw", nw);
+  closeChangePw();
+  alert("Password changed ✓");
+}
 
 /* ── FLOW ── */
 function clearActive() {
@@ -1071,8 +1006,8 @@ function renderFilterList() {
 }
 
 /* ── EXPORT / IMPORT ── */
-// ★ EXPORT APP — actual export logic (called after PIN verified)
-// Note: exportHTML() is defined above — it shows the PIN modal first
+// ★ EXPORT APP — bakes all data into a new self-contained HTML file
+function exportHTML() {
   // Always reset flow indexes to -1 so exported file starts fresh from step 1
   var exportData = {
     opening: { steps: data.opening.steps, index: -1 },
@@ -1088,14 +1023,12 @@ function renderFilterList() {
   html = html.replace(/(<div id="builder")[^>]*(>)/, '$1 style="display:none"$2');
   html = html.replace(/(<div id="filterPage")[^>]*(>)/, '$1 style="display:none"$2');
   html = html.replace(/(<div id="editModal")[^>]*(>)/, '$1$2');
-  html = html.replace(/(<div id="exportPinModal")[^>]*(>)/, '$1 style="display:none"$2');
-  html = html.replace(/(<div id="sessionModal")[^>]*(>)/, '$1 style="display:none"$2');
 
   // 2. Bake the data snapshot
   var snapshot = JSON.stringify({ data: exportData, myRole: myRole, rolePos: rolePositions });
   html = html.replace(
     /var EMBEDDED_DATA = .*?; \/\* __EMBEDDED_DATA__ \*\//,
-    'var EMBEDDED_DATA = {"data":{"opening":{"steps":[{"role":"RWM","text":"Brn., assist me to open this Lodge."},{"role":"RWM","text":"(to W.J.W.)—Br. A.B., what is the first duty of E.A.F.’s in Lodge assembled?"},{"role":"JW","text":"To see that the Lodge is tyled."},{"role":"RWM","text":"You will direct that duty to be done."},{"role":"JW","text":"Bro. X., you will see that the Lodge is tyled."},{"role":"IG","text":"(The I.G. opens the door and sees that the Tyler is at his post.)  I.G. (reports) Bro. A.B., the Lodge is tyled."},{"role":"JW","text":"The Lodge is tyled."},{"role":"RWM","text":"(to W.S.W.) Bro. X, what is the next duty?"},{"role":"SW","text":"To see that none but F…s are present,"},{"role":"RWM","text":"Are you satisfied that all present are F…s, and that they are properly clothed?"},{"role":"SW","text":"I am."},{"role":"RWM","text":"To order, Brn., as E.A.Fs."},{"role":"RWM","text":"W.S.W., how many Office-bearers are necessary in the working of a Lodge?"},{"role":"SW","text":"Seven..namely, the R.W.M., the S. and J.W…s, the S. and J.D…s, the I.G. and the O.G. or T."},{"role":"RWM","text":"W.J.W, the situation of the O.G.?"},{"role":"SW","text":"Outside the door of the Lodge."},{"role":"RWM","text":"His duty?"},{"role":"SW","text":"Being armed with a drawn sword, to keep off all cowans and eavesdroppers, and see that Candidates come properly prepared."},{"role":"RWM","text":"Brother I.G., your situation in the Lodge?"},{"role":"IG","text":"Within the entrance of the Lodge."},{"role":"RWM","text":"Your duty?"},{"role":"IG","text":"To admit Brethren on proof, receive Candidates in due form, and obey the commands of the W.J.W."},{"role":"RWM","text":"Br. J.D., your situation in the Lodge?"},{"role":"JD","text":"At the right of, or near, the W.S.W."},{"role":"RWM","text":"Your duty?"},{"role":"JD","text":"To carry all messages and communications of the R.W.M., from the W.S.W. to the W.J.W., and see the same punctually obeyed."},{"role":"RWM","text":"Br. S.D., your situation in the Lodge?"},{"role":"SD","text":"At the right of, or near the R.W.M."},{"role":"RWM","text":"Your duty?"},{"role":"SD","text":"To bear all messages and commands from the R.W.M. to the W.S.W., and to await the return of the J.D."},{"role":"RWM","text":"W.J.W., your constant place in the Lodge?"},{"role":"JW","text":"In the S., R.W.M."},{"role":"RWM","text":"Why are you so placed?"},{"role":"JW","text":"To mark the sun at its meridian, to call the Brethren from labour to refreshment, and from refreshment to labour again, that profit and pleasure may be the result."},{"role":"RWM","text":"W.S.W., your constant place in the Lodge?"},{"role":"SW","text":"In the W., R.W.M."},{"role":"RWM","text":"Why are you so placed?"},{"role":"SW","text":"To mark the setting sun, to close the Lodge at the R.W.M.’s command, after having seen that every Brother has had his due."},{"role":"RWM","text":"Bro. P.M., the Master’s place?"},{"role":"PM","text":"In the E., R.W.M."},{"role":"RWM","text":"Why is he so placed?"},{"role":"PM","text":"As the sun rises in the E. to open and enlighten the day, so is the R.W.M. placed in the E., to open the Lodge, and to employ and instruct the Brethren in Freemasonry"},{"role":"RWM","text":"Brethren, the Lodge being thus duly constituted, before I declare it open, let us invoke a blessing from T.G.A.O.T.U. on all our undertakings."},{"role":"RWM","text":"Chaplain — May our labours begun in order, be conducted in peace and closed in harmony."},{"role":"RWM","text":"n the name of T.G.A.O.T.U., I declare this Lodge............ No............... on the roll of the Grand Lodge of Scotland duly opened for the purposes of Freemasonry in the First Degree."}],"index":-1},"closing":{"steps":[],"index":-1},"mode":"opening"},"myRole":"none","rolePos":{"RWM":[43.81365391673389,5.50248289126228],"SD":[30,14],"PM":[82,3],"JW":[84.73885455178771,47.741304241350996],"SW":[45.18518567624895,87.6974363701506],"JD":[70,88],"IG":[85.11628260384528,82.08715447326864]}}; /* __EMBEDDED_DATA__ */'
+    'var EMBEDDED_DATA = ' + snapshot + '; /* __EMBEDDED_DATA__ */'
   );
 
   var blob = new Blob([html], { type: "text/html" });
